@@ -11,6 +11,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import classes from './App.module.scss';
+import AdvertisementsPage from './pages/Advertisements';
 
 function App() {
     const [opened, { toggle }] = useDisclosure();
@@ -49,7 +50,7 @@ function App() {
                         </Group>
                     </AppShell.Header>
 
-                    <AppShell.Navbar py="md" px={4}>
+                    <AppShell.Navbar py="md" px={2}>
                         <UnstyledButton className={classes.control}>
                             Объявления
                         </UnstyledButton>
@@ -59,7 +60,9 @@ function App() {
                     </AppShell.Navbar>
 
                     <AppShell.Main>
-                        <Routes></Routes>
+                        <Routes>
+                            <Route path="/" element={<AdvertisementsPage />} />
+                        </Routes>
                     </AppShell.Main>
                 </AppShell>
             </MantineProvider>
