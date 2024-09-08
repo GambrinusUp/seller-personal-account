@@ -29,18 +29,15 @@ function AdvertisementCard({ advertisement }: { advertisement: Advertisment }) {
                     />
                 </Center>
             </Card.Section>
-
             <Group justify="space-between" mt="md" mb="md">
                 <Text fw={500}>{name}</Text>
                 <Badge color="pink" size="xl">
                     {price} ₽
                 </Badge>
             </Group>
-
             <Button color="blue" fullWidth mt="md" radius="md" mb="md">
                 Заказы
             </Button>
-
             <Card.Section withBorder inheritPadding py="xs">
                 <Group justify="center" grow>
                     <Group justify="center">
