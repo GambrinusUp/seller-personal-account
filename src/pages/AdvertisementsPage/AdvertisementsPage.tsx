@@ -1,11 +1,13 @@
 import { Button, Flex, Pagination, Select, SimpleGrid } from '@mantine/core';
-import { useScrollIntoView } from '@mantine/hooks';
+import { useDisclosure, useScrollIntoView } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
 import { MdAddCircleOutline } from 'react-icons/md';
 
-import AdvertisementCard from '../components/AdvertisementCard/AdvertisementCard';
-import SearchInput from '../components/SearchInput/SearchInput';
-import { Advertisment } from '../utils/types';
+import AddAdvertisementModal from '../../components/AddAdvertisementModal/AddAdvertisementModal';
+import AdvertisementCard from '../../components/AdvertisementCard/AdvertisementCard';
+import SearchInput from '../../components/SearchInput/SearchInput';
+import { useNotification } from '../../hooks/useNotification';
+import { Advertisment } from '../../utils/types';
 
 function AdvertisementsPage() {
     const [ads, setAds] = useState<Advertisment[]>([]);
@@ -13,6 +15,8 @@ function AdvertisementsPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [adsPerPage, setAdsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState<string>('');
+    const [opened, { open, close }] = useDisclosure(false);
+    const { showSuccess, showError } = useNotification();
     const { scrollIntoView } = useScrollIntoView();
 
     useEffect(() => {
@@ -44,7 +48,7 @@ function AdvertisementsPage() {
 
     const searchAds = () => {
         if (searchQuery.trim().length > 0) {
-            //alert(searchQuery);
+            setCurrentPage(1);
             const filteredBySearch = ads.filter((ad) => {
                 return ad.name
                     .toLowerCase()
@@ -54,6 +58,50 @@ function AdvertisementsPage() {
         } else {
             setFilteredAds(ads);
         }
+    };
+
+    const handleCreateAd = (newAd: {
+        imageUrl: string;
+        name: string;
+        description: string;
+        price: number;
+    }) => {
+        console.log('Новое объявление:', newAd);
+        const newAdvertisement = {
+            name: newAd.name,
+            description: newAd.description,
+            price: newAd.price,
+            createdAt: new Date().toISOString(),
+            views: 0,
+            likes: 0,
+            imageUrl: newAd.imageUrl,
+        };
+
+        fetch('http://localhost:8000/advertisements', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newAdvertisement),
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Ошибка сети при добавлении записи');
+                }
+                return response.json();
+            })
+            .then((data: Advertisment) => {
+                showSuccess('Новая запись добавлена');
+                console.log('Новая запись добавлена:', data);
+                setAds((prevAds) => [...prevAds, data]);
+                setFilteredAds((prevAds) => [...prevAds, data]);
+                setCurrentPage(1);
+                setSearchQuery('');
+            })
+            .catch((error) => {
+                showError(error.message);
+                console.error('Ошибка при добавлении записи:', error.message);
+            });
     };
 
     return (
@@ -83,6 +131,7 @@ function AdvertisementsPage() {
                     leftSection={<MdAddCircleOutline />}
                     variant="default"
                     size="md"
+                    onClick={open}
                 >
                     Добавить новое объявление
                 </Button>
@@ -96,7 +145,7 @@ function AdvertisementsPage() {
                     ? currentAds.map((ad) => (
                           <AdvertisementCard key={ad.id} advertisement={ad} />
                       ))
-                    : 'Нет совпадений'}
+                    : 'Нет записей'}
             </SimpleGrid>
             <Flex justify="center" align="center" mt="md">
                 <Pagination
@@ -105,6 +154,11 @@ function AdvertisementsPage() {
                     total={Math.ceil(filteredAds.length / adsPerPage)}
                 />
             </Flex>
+            <AddAdvertisementModal
+                opened={opened}
+                close={close}
+                onSubmitAdd={handleCreateAd}
+            />
         </>
     );
 }

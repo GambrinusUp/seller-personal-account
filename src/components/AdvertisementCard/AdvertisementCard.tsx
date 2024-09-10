@@ -1,10 +1,16 @@
 import { Badge, Button, Card, Center, Group, Image, Text } from '@mantine/core';
 import { MdOutlineRemoveRedEye, MdThumbUpOffAlt } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
 
 import { Advertisment } from '../../utils/types';
 
 function AdvertisementCard({ advertisement }: { advertisement: Advertisment }) {
     const { name, price, views, likes, imageUrl } = advertisement;
+    const navigate = useNavigate();
+
+    const navigateToAd = () => {
+        navigate('/advertisement/' + advertisement.id);
+    };
 
     return (
         <Card
@@ -14,7 +20,7 @@ function AdvertisementCard({ advertisement }: { advertisement: Advertisment }) {
             withBorder
             style={{ maxWidth: 1000, width: '100%' }}
         >
-            <Card.Section>
+            <Card.Section onClick={navigateToAd} style={{ cursor: 'pointer' }}>
                 <Center>
                     <Image
                         src={
@@ -23,14 +29,19 @@ function AdvertisementCard({ advertisement }: { advertisement: Advertisment }) {
                                 : imageUrl
                         }
                         h={400}
-                        w="auto"
                         fit="contain"
                         alt="Картинка товара"
                     />
                 </Center>
             </Card.Section>
             <Group justify="space-between" mt="md" mb="md">
-                <Text fw={500}>{name}</Text>
+                <Text
+                    fw={500}
+                    onClick={navigateToAd}
+                    style={{ cursor: 'pointer' }}
+                >
+                    {name}
+                </Text>
                 <Badge color="pink" size="xl">
                     {price} ₽
                 </Badge>
@@ -41,10 +52,10 @@ function AdvertisementCard({ advertisement }: { advertisement: Advertisment }) {
             <Card.Section withBorder inheritPadding py="xs">
                 <Group justify="center" grow>
                     <Group justify="center">
-                        <MdOutlineRemoveRedEye /> {views}
+                        <MdOutlineRemoveRedEye /> {views.toString()}
                     </Group>
                     <Group justify="center">
-                        <MdThumbUpOffAlt /> {likes}
+                        <MdThumbUpOffAlt /> {likes.toString()}
                     </Group>
                 </Group>
             </Card.Section>
