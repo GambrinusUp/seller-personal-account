@@ -5,6 +5,7 @@ import {
     Flex,
     Group,
     Image,
+    Loader,
     NumberInput,
     SimpleGrid,
     Spoiler,
@@ -15,17 +16,17 @@ import {
 import { isInRange, isNotEmpty, useForm } from '@mantine/form';
 import { useEffect, useState } from 'react';
 import { MdOutlineRemoveRedEye, MdThumbUpOffAlt } from 'react-icons/md';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { formatDateTime } from '../../helpers/formatDateTime';
-import { useNotification } from '../../hooks/useNotification';
-import { Advertisment } from '../../utils/types';
+import { useAdvertisement } from '../../hooks/useAdvertisement';
 
 function AdvertisementPage() {
     const { id } = useParams();
-    const [adDetails, setAdDetails] = useState<Advertisment | null>(null);
+    const { adDetails, updateAdvertisement, removeAdvertisement, loading } =
+        useAdvertisement(id!);
     const [isEditing, setIsEditing] = useState(false);
-    const { showSuccess, showError } = useNotification();
+    const navigate = useNavigate();
 
     const form = useForm({
         initialValues: {
@@ -35,78 +36,40 @@ function AdvertisementPage() {
             imageUrl: adDetails?.imageUrl || '',
         },
         validate: {
-            imageUrl: isNotEmpty('URL картинки не может быть пустым'),
             name: isNotEmpty('Название не может быть пустым'),
-            description: isNotEmpty('Описание не может быть пустым'),
             price: isInRange({ min: 1 }, 'Стоимость должна быть больше 0'),
         },
     });
 
-    const handleSubmit = (values: typeof form.values) => {
-        console.log(values);
-        setAdDetails((prevDetails) => {
-            if (!prevDetails) return prevDetails;
-            return {
-                ...prevDetails,
-                ...values,
-            };
-        });
-
-        const editAdvertisement = {
-            name: values.name,
-            description: values.description,
-            price: values.price,
-            imageUrl: values.imageUrl,
-        };
-
-        setIsEditing(false);
-
-        fetch('http://localhost:8000/advertisements/' + id, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(editAdvertisement),
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error('Ошибка сети при редактировании записи');
-                }
-                return response.json();
-            })
-            .then((data: Advertisment) => {
-                showSuccess('Объявление отредактировано');
-                console.log(data);
-                setAdDetails(data);
-                form.setValues({
-                    name: data.name,
-                    price: data.price,
-                    description: data.description,
-                    imageUrl: data.imageUrl,
-                });
-            })
-            .catch((error) => {
-                showError('Ошибка при редактировании записи');
-                console.error(error.message);
+    useEffect(() => {
+        if (adDetails) {
+            form.setValues({
+                name: adDetails.name,
+                price: adDetails.price,
+                description: adDetails.description,
+                imageUrl: adDetails.imageUrl,
             });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [adDetails]);
+
+    const handleSubmit = (values: typeof form.values) => {
+        updateAdvertisement(values);
+        setIsEditing(false);
     };
 
-    useEffect(() => {
-        console.log(id);
-        fetch('http://localhost:8000/advertisements/' + id)
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data);
-                setAdDetails(data);
-                form.setValues({
-                    name: data.name,
-                    price: data.price,
-                    description: data.description,
-                    imageUrl: data.imageUrl,
-                });
-            });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id]);
+    if (loading)
+        return (
+            <Flex
+                justify="center"
+                align="center"
+                mt="md"
+                mb="md"
+                direction="column"
+            >
+                <Loader color="blue" />
+            </Flex>
+        );
 
     return (
         <>
@@ -241,7 +204,10 @@ function AdvertisementPage() {
                                         mt="md"
                                         radius="md"
                                         mb="md"
-                                        onClick={() => alert('удалить')}
+                                        onClick={() => {
+                                            removeAdvertisement();
+                                            navigate('/');
+                                        }}
                                     >
                                         Удалить
                                     </Button>

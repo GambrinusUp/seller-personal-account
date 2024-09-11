@@ -1,17 +1,25 @@
-import { Button, Flex, Pagination, Select, SimpleGrid } from '@mantine/core';
+import {
+    Button,
+    Flex,
+    Loader,
+    Pagination,
+    Select,
+    SimpleGrid,
+} from '@mantine/core';
 import { useDisclosure, useScrollIntoView } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
 import { MdAddCircleOutline } from 'react-icons/md';
 
 import AddAdvertisementModal from '../../components/AddAdvertisementModal/AddAdvertisementModal';
+import AdsFilter from '../../components/AdsFilter/AdsFilter';
 import AdvertisementCard from '../../components/AdvertisementCard/AdvertisementCard';
 import SearchInput from '../../components/SearchInput/SearchInput';
+import { useAdvertisements } from '../../hooks/useAdvertisements';
 import { useNotification } from '../../hooks/useNotification';
-import { Advertisment } from '../../utils/types';
 
 function AdvertisementsPage() {
-    const [ads, setAds] = useState<Advertisment[]>([]);
-    const [filteredAds, setFilteredAds] = useState<Advertisment[]>([]);
+    const { ads, addAdvertisement, error, loading } = useAdvertisements();
+    const [filteredAds, setFilteredAds] = useState(ads);
     const [currentPage, setCurrentPage] = useState(1);
     const [adsPerPage, setAdsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState<string>('');
@@ -19,18 +27,43 @@ function AdvertisementsPage() {
     const { showSuccess, showError } = useNotification();
     const { scrollIntoView } = useScrollIntoView();
 
+    const [sortMethod, setSortMethod] = useState<string | null>(null);
+    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+
     useEffect(() => {
-        fetch('http://localhost:8000/advertisements')
-            .then((response) => response.json())
-            .then((data) => {
-                setAds(data);
-                setFilteredAds(data);
-            });
-    }, []);
+        if (error) {
+            showError(error);
+        }
+    }, [error, showError]);
+
+    useEffect(() => {
+        setFilteredAds(ads);
+    }, [ads]);
 
     const indexOfLastAd = currentPage * adsPerPage;
     const indexOfFirstAd = indexOfLastAd - adsPerPage;
-    const currentAds = filteredAds.slice(indexOfFirstAd, indexOfLastAd);
+
+    const sortAds = (ads: typeof filteredAds) => {
+        if (sortMethod === 'price') {
+            return [...ads].sort((a, b) =>
+                sortDirection === 'asc' ? a.price - b.price : b.price - a.price
+            );
+        } else if (sortMethod === 'views') {
+            return [...ads].sort((a, b) =>
+                sortDirection === 'asc' ? a.views - b.views : b.views - a.views
+            );
+        } else if (sortMethod === 'likes') {
+            return [...ads].sort((a, b) =>
+                sortDirection === 'asc' ? a.likes - b.likes : b.likes - a.likes
+            );
+        }
+        return ads;
+    };
+
+    const currentAds = sortAds(filteredAds).slice(
+        indexOfFirstAd,
+        indexOfLastAd
+    );
 
     const handlePageChange = (page: number | null) => {
         if (page) {
@@ -49,11 +82,9 @@ function AdvertisementsPage() {
     const searchAds = () => {
         if (searchQuery.trim().length > 0) {
             setCurrentPage(1);
-            const filteredBySearch = ads.filter((ad) => {
-                return ad.name
-                    .toLowerCase()
-                    .includes(searchQuery.toLowerCase());
-            });
+            const filteredBySearch = ads.filter((ad) =>
+                ad.name.toLowerCase().includes(searchQuery.toLowerCase())
+            );
             setFilteredAds(filteredBySearch);
         } else {
             setFilteredAds(ads);
@@ -66,7 +97,6 @@ function AdvertisementsPage() {
         description: string;
         price: number;
     }) => {
-        console.log('Новое объявление:', newAd);
         const newAdvertisement = {
             name: newAd.name,
             description: newAd.description,
@@ -77,32 +107,22 @@ function AdvertisementsPage() {
             imageUrl: newAd.imageUrl,
         };
 
-        fetch('http://localhost:8000/advertisements', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newAdvertisement),
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error('Ошибка сети при добавлении записи');
-                }
-                return response.json();
-            })
-            .then((data: Advertisment) => {
-                showSuccess('Новая запись добавлена');
-                console.log('Новая запись добавлена:', data);
-                setAds((prevAds) => [...prevAds, data]);
-                setFilteredAds((prevAds) => [...prevAds, data]);
-                setCurrentPage(1);
-                setSearchQuery('');
-            })
-            .catch((error) => {
-                showError(error.message);
-                console.error('Ошибка при добавлении записи:', error.message);
-            });
+        addAdvertisement(newAdvertisement);
+        showSuccess('Новая запись добавлена');
     };
+
+    if (loading)
+        return (
+            <Flex
+                justify="center"
+                align="center"
+                mt="md"
+                mb="md"
+                direction="column"
+            >
+                <Loader color="blue" />
+            </Flex>
+        );
 
     return (
         <>
@@ -118,6 +138,12 @@ function AdvertisementsPage() {
                     setSearchQuery={setSearchQuery}
                     onSearch={searchAds}
                 />
+                <AdsFilter
+                    sortMethod={sortMethod}
+                    setSortMethod={setSortMethod}
+                    sortDirection={sortDirection}
+                    setSortDirection={setSortDirection}
+                />
                 <Select
                     label="Объявлений на странице"
                     placeholder="Выберите количество"
@@ -126,6 +152,7 @@ function AdvertisementsPage() {
                     onChange={handleAdsPerPageChange}
                     radius="md"
                     mb="sm"
+                    allowDeselect={false}
                 />
                 <Button
                     leftSection={<MdAddCircleOutline />}
