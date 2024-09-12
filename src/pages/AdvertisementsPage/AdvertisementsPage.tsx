@@ -14,6 +14,7 @@ import AddAdvertisementModal from '../../components/AddAdvertisementModal/AddAdv
 import AdsFilter from '../../components/AdsFilter/AdsFilter';
 import AdvertisementCard from '../../components/AdvertisementCard/AdvertisementCard';
 import SearchInput from '../../components/SearchInput/SearchInput';
+import { sortAds } from '../../helpers/sortAds';
 import { useAdvertisements } from '../../hooks/useAdvertisements';
 import { useNotification } from '../../hooks/useNotification';
 
@@ -26,7 +27,6 @@ function AdvertisementsPage() {
     const [opened, { open, close }] = useDisclosure(false);
     const { showSuccess, showError } = useNotification();
     const { scrollIntoView } = useScrollIntoView();
-
     const [sortMethod, setSortMethod] = useState<string | null>(null);
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
@@ -43,24 +43,7 @@ function AdvertisementsPage() {
     const indexOfLastAd = currentPage * adsPerPage;
     const indexOfFirstAd = indexOfLastAd - adsPerPage;
 
-    const sortAds = (ads: typeof filteredAds) => {
-        if (sortMethod === 'price') {
-            return [...ads].sort((a, b) =>
-                sortDirection === 'asc' ? a.price - b.price : b.price - a.price
-            );
-        } else if (sortMethod === 'views') {
-            return [...ads].sort((a, b) =>
-                sortDirection === 'asc' ? a.views - b.views : b.views - a.views
-            );
-        } else if (sortMethod === 'likes') {
-            return [...ads].sort((a, b) =>
-                sortDirection === 'asc' ? a.likes - b.likes : b.likes - a.likes
-            );
-        }
-        return ads;
-    };
-
-    const currentAds = sortAds(filteredAds).slice(
+    const currentAds = sortAds(filteredAds, sortMethod, sortDirection).slice(
         indexOfFirstAd,
         indexOfLastAd
     );
@@ -137,6 +120,7 @@ function AdvertisementsPage() {
                     searchQuery={searchQuery}
                     setSearchQuery={setSearchQuery}
                     onSearch={searchAds}
+                    resetAds={() => setFilteredAds(ads)}
                 />
                 <AdsFilter
                     sortMethod={sortMethod}

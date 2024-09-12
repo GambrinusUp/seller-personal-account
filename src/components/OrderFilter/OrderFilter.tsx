@@ -21,6 +21,7 @@ function OrderFilter({
                 label="Сортировка по статусу"
                 value={selectedStatus}
                 onChange={setSelectedStatus}
+                radius="md"
                 data={[
                     {
                         value: '-1',
@@ -61,6 +62,7 @@ function OrderFilter({
                 label="Сортировка по сумме заказа"
                 value={selectedSort}
                 onChange={setSelectedSort}
+                radius="md"
                 data={[
                     { label: 'Без сортировки', value: '-1' },
                     { label: 'По возрастанию', value: 'asc' },

@@ -88,6 +88,7 @@ function AdvertisementPage() {
                         <Card.Section p="md">
                             {isEditing ? (
                                 <TextInput
+                                    radius="md"
                                     label="URL изображения"
                                     {...form.getInputProps('imageUrl')}
                                 />
@@ -114,6 +115,7 @@ function AdvertisementPage() {
                             </Group>
                             {isEditing ? (
                                 <TextInput
+                                    radius="md"
                                     label="Название"
                                     {...form.getInputProps('name')}
                                 />
@@ -123,6 +125,7 @@ function AdvertisementPage() {
                             <Group>
                                 {isEditing ? (
                                     <NumberInput
+                                        radius="md"
                                         label="Цена"
                                         {...form.getInputProps('price')}
                                         min={0}
@@ -138,6 +141,7 @@ function AdvertisementPage() {
                             </Group>
                             {isEditing ? (
                                 <Textarea
+                                    radius="md"
                                     label="Описание"
                                     minRows={4}
                                     resize="vertical"

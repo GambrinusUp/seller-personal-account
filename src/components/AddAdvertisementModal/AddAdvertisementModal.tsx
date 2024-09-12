@@ -28,9 +28,7 @@ function AddAdvertisementModal({ opened, close, onSubmitAdd }: ModalProps) {
             price: 0,
         },
         validate: {
-            imageUrl: isNotEmpty('URL картинки не может быть пустым'),
             name: isNotEmpty('Название не может быть пустым'),
-            description: isNotEmpty('Описание не может быть пустым'),
             price: isInRange({ min: 1 }, 'Стоимость должна быть больше 0'),
         },
     });

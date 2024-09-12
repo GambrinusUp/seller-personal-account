@@ -21,7 +21,6 @@ function OrderStatusModal({
     const [selectedStatus, setSelectedStatus] = useState<number>(currentStatus);
 
     const handleSave = () => {
-        console.log(id, selectedStatus);
         onSave(id, selectedStatus);
         close();
     };

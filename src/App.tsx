@@ -42,13 +42,22 @@ function App() {
                                 size="sm"
                             />
                             <Group justify="space-between" style={{ flex: 1 }}>
-                                <Link to="/">Личный кабинет</Link>
+                                <Link to="/" className={classes.link}>
+                                    Личный кабинет
+                                </Link>
                                 <Group ml="xl" gap={0} visibleFrom="sm">
                                     <UnstyledButton className={classes.control}>
-                                        Объявления
+                                        <Link to="/" className={classes.link}>
+                                            Объявления
+                                        </Link>
                                     </UnstyledButton>
                                     <UnstyledButton className={classes.control}>
-                                        Заказы
+                                        <Link
+                                            to="/orders"
+                                            className={classes.link}
+                                        >
+                                            Заказы
+                                        </Link>
                                     </UnstyledButton>
                                 </Group>
                             </Group>
@@ -56,10 +65,14 @@ function App() {
                     </AppShell.Header>
                     <AppShell.Navbar py="md" px={2}>
                         <UnstyledButton className={classes.control}>
-                            Объявления
+                            <Link to="/" className={classes.link}>
+                                Объявления
+                            </Link>
                         </UnstyledButton>
                         <UnstyledButton className={classes.control}>
-                            Заказы
+                            <Link to="/orders" className={classes.link}>
+                                Заказы
+                            </Link>
                         </UnstyledButton>
                     </AppShell.Navbar>
                     <AppShell.Main>

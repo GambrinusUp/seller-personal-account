@@ -5,12 +5,14 @@ interface SearchInputProps {
     searchQuery: string;
     setSearchQuery: (query: string) => void;
     onSearch: () => void;
+    resetAds: () => void;
 }
 
 function SearchInput({
     searchQuery,
     setSearchQuery,
     onSearch,
+    resetAds,
 }: SearchInputProps) {
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
@@ -18,13 +20,18 @@ function SearchInput({
         }
     };
 
+    const handleClear = () => {
+        setSearchQuery('');
+        resetAds();
+    };
+
     return (
-        <Flex direction="column" align="center" style={{ width: '100%' }}>
+        <Flex direction="column" align="center" w="100%">
             <Input
                 placeholder="Поиск по названию объявления"
                 leftSection={<MdOutlineSearch />}
                 mb="sm"
-                style={{ width: '80%' }}
+                w="80%"
                 radius="md"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.currentTarget.value)}
@@ -33,7 +40,7 @@ function SearchInput({
                 rightSection={
                     <CloseButton
                         aria-label="Clear input"
-                        onClick={() => setSearchQuery('')}
+                        onClick={handleClear}
                         style={{
                             display: searchQuery ? undefined : 'none',
                         }}

@@ -12,39 +12,38 @@ function AdsFilter({
     setSortDirection,
 }: AdvertisementsFilterProps) {
     return (
-        <>
-            <Group justify="center">
+        <Group justify="center">
+            <Select
+                label="Сортировка"
+                placeholder="Выберите метод сортировки"
+                data={[
+                    { value: 'price', label: 'По цене' },
+                    { value: 'views', label: 'По просмотрам' },
+                    { value: 'likes', label: 'По лайкам' },
+                ]}
+                value={sortMethod}
+                onChange={setSortMethod}
+                radius="md"
+                mb="sm"
+            />
+            {sortMethod && (
                 <Select
-                    label="Сортировка"
-                    placeholder="Выберите метод сортировки"
+                    label="Направление сортировки"
+                    placeholder="Выберите направление"
                     data={[
-                        { value: 'price', label: 'По цене' },
-                        { value: 'views', label: 'По просмотрам' },
-                        { value: 'likes', label: 'По лайкам' },
+                        { value: 'asc', label: 'По возрастанию' },
+                        { value: 'desc', label: 'По убыванию' },
                     ]}
-                    value={sortMethod}
-                    onChange={setSortMethod}
+                    value={sortDirection}
+                    onChange={(value) =>
+                        setSortDirection(value as 'asc' | 'desc')
+                    }
                     radius="md"
                     mb="sm"
+                    allowDeselect={false}
                 />
-                {sortMethod && (
-                    <Select
-                        label="Направление сортировки"
-                        placeholder="Выберите направление"
-                        data={[
-                            { value: 'asc', label: 'По возрастанию' },
-                            { value: 'desc', label: 'По убыванию' },
-                        ]}
-                        value={sortDirection}
-                        onChange={(value) =>
-                            setSortDirection(value as 'asc' | 'desc')
-                        }
-                        radius="md"
-                        mb="sm"
-                    />
-                )}
-            </Group>
-        </>
+            )}
+        </Group>
     );
 }
 

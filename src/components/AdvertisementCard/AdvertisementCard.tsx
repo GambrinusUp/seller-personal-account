@@ -12,6 +12,10 @@ function AdvertisementCard({ advertisement }: { advertisement: Advertisment }) {
         navigate('/advertisement/' + advertisement.id);
     };
 
+    const navigateToOrders = () => {
+        navigate(`/orders?advertisementId=${advertisement.id}`);
+    };
+
     return (
         <Card
             shadow="sm"
@@ -46,7 +50,14 @@ function AdvertisementCard({ advertisement }: { advertisement: Advertisment }) {
                     {price} ₽
                 </Badge>
             </Group>
-            <Button color="blue" fullWidth mt="md" radius="md" mb="md">
+            <Button
+                color="blue"
+                fullWidth
+                mt="md"
+                radius="md"
+                mb="md"
+                onClick={navigateToOrders}
+            >
                 Заказы
             </Button>
             <Card.Section withBorder inheritPadding py="xs">
