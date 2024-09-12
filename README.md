@@ -1,50 +1,49 @@
-# React + TypeScript + Vite
+# Личный кабинет продавца на маркетплейсе
+## Функционал:
+**Страница объявлений**: 
+-  Просмотр объявления. 
+- Возможность редактирования объявления: изменение картинки, названия, цены и описания. 
+**Страница всех объявлений**: 
+- Отображение списка всех объявлений продавца. 
+- Пагинация и выбор количества объявлений на странице (по умолчанию 10). 
+- Поиск по названию объявления. 
+- Переход на страницу объявления по клику на карточку. 
+- Возможность создания новых объявлений через модальное окно с полями для ввода: Картинка (URL), Название, Описание, Стоимость. 
+**Страница заказов**: 
+- Отображение списка заказов с фильтрацией по статусу. 
+- Сортировка по сумме заказа. 
+- Карточка заказа включает: Количество товаров, Возможность завершения заказа, Стоимость заказа, Дата создания заказа, Статус, Номер заказа. 
+- Кнопка для показа всех товаров в заказе (в карточке или в модальном окне). 
+- Переход в объявление продавца по товару в заказе. 
+**Панель навигации**: 
+- Вкладка "Объявления" - переход на страницу всех объявлений. 
+- Вкладка "Заказы" - переход на страницу заказов.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Дополнительные функции 
+- **Фильтрация объявлений** на странице всех объявлений по цене, просмотрам и лайкам. 
+- **Переход из объявления в заказы**: на странице объявления при клике на кнопку "Заказы" происходит переход в раздел заказов, где отображаются заказы, содержащие это объявление. 
+- **Пагинация заказов** на странице заказов.
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Инструкция по запуску:
+1. Склонируйте репозиторий
 ```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+git clone https://github.com/GambrinusUp/seller-personal-account.git
 ```
+2. Установите зависимости
+```
+npm install
+```
+3. Запустите
+```
+npm run start
+```
+## Используемые технологии:
+- React
+- TypeScript
+- Vite
+- Node.js
+- Json-server
+- Mantine
+- React-icons
+- React-router-dom
+- Eslint
